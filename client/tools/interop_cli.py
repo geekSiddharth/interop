@@ -73,6 +73,9 @@ def main():
                         required=True,
                         help='Username for interoperability.')
     parser.add_argument('--password', help='Password for interoperability.')
+    parser.add_argument('--team_id',
+                        help='If admin user, the username of the team on ' +
+                             'whose behalf they are submitting targets.')
     subparsers = parser.add_subparsers(help='Sub-command help.')
 
     subparser = subparsers.add_parser('missions', help='Get missions.')
@@ -123,7 +126,7 @@ unique targets, if the tool is run multiple times.''',
         password = getpass.getpass('Interoperability Password: ')
 
     # Create client and dispatch subcommand.
-    client = Client(args.url, args.username, password)
+    client = Client(args.url, args.username, password, args.team_id)
     args.func(args, client)
 
 
