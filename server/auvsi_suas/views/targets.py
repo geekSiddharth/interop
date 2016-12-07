@@ -149,7 +149,7 @@ class Targets(View):
         if 'team_id' not in data:
             return HttpResponseBadRequest('Team ID required.')
         team_id = data['team_id']
-        if not request.user.is_superuser and request.user.id != team_id:
+        if not request.user.is_superuser and request.user.username != team_id:
             return HttpResponseBadRequest(
                 'Team ID does not match request user.')
 
@@ -174,7 +174,7 @@ class Targets(View):
             l.save()
 
         # Use the dictionary get() method to default non-existent values to None.
-        t = Target(user=User.objects.get(id=team_id),
+        t = Target(user=User.objects.get(username=team_id),
                    target_type=data['type'],
                    location=l,
                    orientation=data.get('orientation'),
@@ -243,14 +243,6 @@ class TargetsId(View):
             data = json.loads(request.body)
         except ValueError:
             return HttpResponseBadRequest('Request body is not valid JSON.')
-
-        # Team id required if submitting target as superuser.
-        if 'team_id' not in data:
-            return HttpResponseBadRequest('Team ID required.')
-        team_id = data['team_id']
-        if not request.user.is_superuser and request.user.id != team_id:
-            return HttpResponseBadRequest(
-                'Team ID does not match request user.')
 
         try:
             data = normalize_data(data)
