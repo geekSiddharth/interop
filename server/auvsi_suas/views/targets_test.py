@@ -115,6 +115,7 @@ class TestPostTarget(TestCase):
         """Send complete target with all fields."""
         target = {
             'type': 'standard',
+            'team_id': self.user.id,
             'latitude': 38,
             'longitude': -76,
             'orientation': 'n',
@@ -153,7 +154,7 @@ class TestPostTarget(TestCase):
 
     def test_minimal(self):
         """Send target minimal fields."""
-        target = {'type': 'standard'}
+        target = {'type': 'standard', 'team_id': self.user.id}
 
         response = self.client.post(targets_url,
                                     data=json.dumps(target),
@@ -180,7 +181,12 @@ class TestPostTarget(TestCase):
 
     def test_none(self):
         """Send target with None fields has no effect."""
-        target = {'type': 'standard', 'latitude': None, 'shape': None}
+        target = {
+            'type': 'standard',
+            'team_id': self.user.id,
+            'latitude': None,
+            'shape': None
+        }
 
         response = self.client.post(targets_url,
                                     data=json.dumps(target),
@@ -197,6 +203,7 @@ class TestPostTarget(TestCase):
     def test_missing_type(self):
         """Target type required."""
         target = {
+            'team_id': self.user.id,
             'latitude': 38,
             'longitude': -76,
             'orientation': 'N',
@@ -212,6 +219,24 @@ class TestPostTarget(TestCase):
                                     content_type='application/json')
         self.assertEqual(400, response.status_code)
 
+    def test_missing_team_id(self):
+        """Team id required."""
+        target = {'type': 'standard'}
+
+        response = self.client.post(targets_url,
+                                    data=json.dumps(target),
+                                    content_type='application/json')
+        self.assertEqual(400, response.status_code)
+
+    def test_invalid_team_id(self):
+        """Team id must match id of request user."""
+        target = {'type': 'standard', 'team_id': 723}
+
+        response = self.client.post(targets_url,
+                                    data=json.dumps(target),
+                                    content_type='application/json')
+        self.assertEqual(400, response.status_code)
+
     def test_invalid_json(self):
         """Request body must contain valid JSON."""
         response = self.client.post(targets_url,
@@ -221,7 +246,7 @@ class TestPostTarget(TestCase):
 
     def test_missing_latitude(self):
         """Target latitude required if longitude specified."""
-        target = {'type': 'standard', 'longitude': -76}
+        target = {'type': 'standard', 'team_id': self.user.id, 'longitude': -76}
 
         response = self.client.post(targets_url,
                                     data=json.dumps(target),
@@ -230,7 +255,7 @@ class TestPostTarget(TestCase):
 
     def test_missing_longitude(self):
         """Target longitude required if latitude specified."""
-        target = {'type': 'standard', 'latitude': 38}
+        target = {'type': 'standard', 'team_id': self.user.id, 'latitude': 38}
 
         response = self.client.post(targets_url,
                                     data=json.dumps(target),
@@ -242,7 +267,12 @@ class TestPostTarget(TestCase):
         bad = ['foo', 'standard nonsense', 42]
 
         for b in bad:
-            target = {'type': b, 'latitude': 38, 'longitude': -76}
+            target = {
+                'type': b,
+                'team_id': self.user.id,
+                'latitude': 38,
+                'longitude': -76
+            }
 
             response = self.client.post(targets_url,
                                         data=json.dumps(target),
@@ -254,7 +284,12 @@ class TestPostTarget(TestCase):
         bad = ['string', 120, -120]
 
         for b in bad:
-            target = {'type': 'standard', 'latitude': b, 'longitude': -76}
+            target = {
+                'type': 'standard',
+                'team_id': self.user.id,
+                'latitude': b,
+                'longitude': -76
+            }
 
             response = self.client.post(targets_url,
                                         data=json.dumps(target),
@@ -266,7 +301,12 @@ class TestPostTarget(TestCase):
         bad = ['string', 200, -200]
 
         for b in bad:
-            target = {'type': 'standard', 'latitude': 38, 'longitude': b}
+            target = {
+                'type': 'standard',
+                'team_id': self.user.id,
+                'latitude': 38,
+                'longitude': b
+            }
 
             response = self.client.post(targets_url,
                                         data=json.dumps(target),
@@ -280,6 +320,7 @@ class TestPostTarget(TestCase):
         for b in bad:
             target = {
                 'type': 'standard',
+                'team_id': self.user.id,
                 'latitude': 38,
                 'longitude': -76,
                 'shape': b,
@@ -297,6 +338,7 @@ class TestPostTarget(TestCase):
         for b in bad:
             target = {
                 'type': 'standard',
+                'team_id': self.user.id,
                 'latitude': 38,
                 'longitude': -76,
                 'background_color': b,
@@ -314,6 +356,7 @@ class TestPostTarget(TestCase):
         for b in bad:
             target = {
                 'type': 'standard',
+                'team_id': self.user.id,
                 'latitude': 38,
                 'longitude': -76,
                 'alphanumeric_color': b,
@@ -331,6 +374,7 @@ class TestPostTarget(TestCase):
         for b in bad:
             target = {
                 'type': 'standard',
+                'team_id': self.user.id,
                 'latitude': 38,
                 'longitude': -76,
                 'orientation': b,
@@ -348,6 +392,7 @@ class TestPostTarget(TestCase):
         for b in bad:
             target = {
                 'type': 'standard',
+                'team_id': self.user.id,
                 'latitude': 38,
                 'longitude': -76,
                 'autonomous': b,
@@ -358,6 +403,26 @@ class TestPostTarget(TestCase):
                                         content_type='application/json')
             self.assertEqual(400, response.status_code)
 
+    def test_superuser_create_target(self):
+        # Login as superuser.
+        superuser = User.objects.create_superuser(
+            'testsuperuser', 'testsuperemail@x.com', 'testsuperpass')
+        response = self.client.post(login_url, {
+            'username': 'testsuperuser',
+            'password': 'testsuperpass'
+        })
+        self.assertEqual(200, response.status_code)
+
+        # Create target.
+        target = {'type': 'standard', 'team_id': self.user.id}
+        response = self.client.post(targets_url,
+                                    data=json.dumps(target),
+                                    content_type='application/json')
+        self.assertEqual(201, response.status_code)
+
+        # Ensure target created for proper user.
+        created = json.loads(response.content)
+        self.assertEqual(self.user.id, created['user'])
 
 class TestTargetsIdLoggedOut(TestCase):
     """Tests logged out targets_id."""
@@ -686,7 +751,8 @@ class TestTargetIdImage(TestCase):
 
         # Create a target
         response = self.client.post(targets_url,
-                                    data=json.dumps({'type': 'standard'}),
+                                    data=json.dumps({'type': 'standard',
+                                                     'team_id': self.user.id}),
                                     content_type='application/json')
         self.assertEqual(201, response.status_code)
         self.target_id = json.loads(response.content)['id']
