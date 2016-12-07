@@ -432,6 +432,7 @@ class TestPostTarget(TestCase):
         created = json.loads(response.content)
         self.assertEqual(self.user.id, created['user'])
 
+
 class TestTargetsIdLoggedOut(TestCase):
     """Tests logged out targets_id."""
 

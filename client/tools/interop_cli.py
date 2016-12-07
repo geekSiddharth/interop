@@ -75,7 +75,7 @@ def main():
     parser.add_argument('--password', help='Password for interoperability.')
     parser.add_argument('--team_id',
                         help='If admin user, the username of the team on ' +
-                             'whose behalf they are submitting targets.')
+                        'whose behalf they are submitting targets.')
     subparsers = parser.add_subparsers(help='Sub-command help.')
 
     subparser = subparsers.add_parser('missions', help='Get missions.')
