@@ -381,6 +381,14 @@ class TestPostTarget(TestCase):
 
     def test_missing_team_id_if_superuser(self):
         """Team id required if superuser."""
+        superuser = User.objects.create_superuser(
+            'testsuperuser', 'testsuperemail@x.com', 'testsuperpass')
+        response = self.client.post(login_url, {
+            'username': 'testsuperuser',
+            'password': 'testsuperpass'
+        })
+        self.assertEqual(200, response.status_code)
+        
         target = {'type': 'standard'}
 
         response = self.client.post(targets_url,

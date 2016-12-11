@@ -149,7 +149,8 @@ class Targets(View):
         user = request.user
         if request.user.is_superuser:
             if 'team_id' not in data:
-                return HttpResponseBadRequest('Team ID required for superuser.')
+                return HttpResponseBadRequest(
+                    'Team ID required for superuser.')
             user = User.objects.get(username=data['team_id'])
 
         latitude = data.get('latitude')
