@@ -150,6 +150,14 @@ class Targets(View):
         if 'type' not in data:
             return HttpResponseBadRequest('Target type required.')
 
+        # Team id required if submitting target as superuser.
+        user = request.user
+        if request.user.is_superuser:
+            if 'team_id' not in data:
+                return HttpResponseBadRequest(
+                    'Team ID required for superuser.')
+            user = User.objects.get(username=data['team_id'])
+
         latitude = data.get('latitude')
         longitude = data.get('longitude')
 
@@ -176,7 +184,7 @@ class Targets(View):
             l.save()
 
         # Use the dictionary get() method to default non-existent values to None.
-        t = Target(user=request.user,
+        t = Target(user=user,
                    target_type=data['type'],
                    location=l,
                    orientation=data.get('orientation'),

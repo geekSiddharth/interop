@@ -383,10 +383,11 @@ class TestTarget(unittest.TestCase):
                    background_color='white',
                    alphanumeric='a',
                    alphanumeric_color='black',
-                   autonomous=True)
+                   autonomous=True,
+                   team_id='testuser')
         s = o.serialize()
 
-        self.assertEqual(12, len(s))
+        self.assertEqual(13, len(s))
         self.assertEqual(1, s['id'])
         self.assertEqual(2, s['user'])
         self.assertEqual('standard', s['type'])
@@ -398,6 +399,7 @@ class TestTarget(unittest.TestCase):
         self.assertEqual('a', s['alphanumeric'])
         self.assertEqual('black', s['alphanumeric_color'])
         self.assertEqual(True, s['autonomous'])
+        self.assertEqual('testuser', s['team_id'])
 
     def test_deserialize(self):
         """Test deserialization."""
@@ -411,6 +413,7 @@ class TestTarget(unittest.TestCase):
             'alphanumeric': 'a',
             'alphanumeric_color': 'black',
             'autonomous': True,
+            'team_id': 'testuser'
         })
 
         self.assertEqual('standard', o.type)
@@ -422,6 +425,7 @@ class TestTarget(unittest.TestCase):
         self.assertEqual('a', o.alphanumeric)
         self.assertEqual('black', o.alphanumeric_color)
         self.assertEqual(True, o.autonomous)
+        self.assertEqual('testuser', o.team_id)
 
         o = Target.deserialize({'type': 'emergent'})
 

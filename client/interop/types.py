@@ -254,6 +254,8 @@ class Target(ClientBaseType):
             ADLC target.
         actionable_override: Optional. Manually sets the target to be
             actionable. Must be superuser to set this field.
+        team_id: Optional. The username of the team on whose behalf to submit
+            targets.
 
     Raises:
         ValueError: Argument not valid.
@@ -261,7 +263,7 @@ class Target(ClientBaseType):
 
     attrs = ['id', 'user', 'type', 'latitude', 'longitude', 'orientation',
              'shape', 'background_color', 'alphanumeric', 'alphanumeric_color',
-             'description', 'autonomous', 'actionable_override']
+             'description', 'autonomous', 'actionable_override', 'team_id']
 
     def __init__(self,
                  id=None,
@@ -276,7 +278,8 @@ class Target(ClientBaseType):
                  alphanumeric_color=None,
                  description=None,
                  autonomous=False,
-                 actionable_override=False):
+                 actionable_override=False,
+                 team_id=None):
         self.id = id
         self.user = user
         self.type = type
@@ -290,3 +293,4 @@ class Target(ClientBaseType):
         self.description = description
         self.autonomous = autonomous
         self.actionable_override = actionable_override
+        self.team_id = team_id
