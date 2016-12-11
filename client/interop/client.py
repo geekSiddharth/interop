@@ -31,7 +31,7 @@ class Client(object):
     AsyncClient uses this base Client to add performance features.
     """
 
-    def __init__(self, url, username, password, team_id=None, timeout=1):
+    def __init__(self, url, username, password, timeout=1):
         """Create a new Client and login.
 
         Args:
@@ -39,13 +39,10 @@ class Client(object):
                 (e.g., http://localhost:8000).
             username: Interoperability username.
             password: Interoperability password.
-            team_id: If admin user, the username of the team on whose behalf
-                they are submitting targets.
             timeout: Individual session request timeout (seconds).
         """
         self.url = url
         self.timeout = timeout
-        self.team_id = team_id if team_id else username
 
         self.session = requests.Session()
 
@@ -201,9 +198,7 @@ class Client(object):
             requests.Timeout: Request timeout.
             ValueError or AttributeError: Malformed response from server.
         """
-        serialized_target = target.serialize()
-        serialized_target['team_id'] = self.team_id
-        r = self.post('/api/targets', data=json.dumps(serialized_target))
+        r = self.post('/api/targets', data=json.dumps(target.serialize()))
         return Target.deserialize(r.json())
 
     def put_target(self, target_id, target):
@@ -219,10 +214,8 @@ class Client(object):
             requests.Timeout: Request timeout.
             ValueError or AttributeError: Malformed response from server.
         """
-        serialized_target = target.serialize()
-        serialized_target['team_id'] = self.team_id
         r = self.put('/api/targets/%d' % target_id,
-                     data=json.dumps(serialized_target))
+                     data=json.dumps(target.serialize()))
         return Target.deserialize(r.json())
 
     def delete_target(self, target_id):
