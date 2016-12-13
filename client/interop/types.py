@@ -278,7 +278,7 @@ class Target(ClientBaseType):
                  alphanumeric_color=None,
                  description=None,
                  autonomous=False,
-                 actionable_override=False,
+                 actionable_override=None,
                  team_id=None):
         self.id = id
         self.user = user
