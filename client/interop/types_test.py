@@ -388,7 +388,7 @@ class TestTarget(unittest.TestCase):
                    team_id='testuser')
         s = o.serialize()
 
-        self.assertEqual(14, len(s))
+        self.assertEqual(13, len(s))
         self.assertEqual(1, s['id'])
         self.assertEqual(2, s['user'])
         self.assertEqual('standard', s['type'])

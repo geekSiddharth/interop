@@ -152,11 +152,12 @@ class Targets(View):
 
         # Team id required if submitting target as superuser.
         user = request.user
-        if request.user.is_superuser:
-            if 'team_id' not in data:
-                return HttpResponseBadRequest(
-                    'Team ID required for superuser.')
-            user = User.objects.get(username=data['team_id'])
+        if 'team_id' in data:
+            if request.user.is_superuser:
+                user = User.objects.get(username=data['team_id'])
+            else:
+                return HttpResponseForbidden(
+                    'Non-admin users cannot send team_id')
 
         latitude = data.get('latitude')
         longitude = data.get('longitude')

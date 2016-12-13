@@ -45,7 +45,7 @@ class ClientBaseType(object):
                 serial[attr] = data.serialize()
             elif isinstance(data, list):
                 serial[attr] = [d.serialize() for d in data]
-            else:
+            elif data is not None:
                 serial[attr] = data
         return serial
 
